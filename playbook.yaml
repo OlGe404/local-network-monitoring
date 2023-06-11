@@ -25,7 +25,7 @@
         - speedtest-exporter.yml
 
       kubernetes.core.k8s:
-        # state: absent
+       # state: absent
         namespace: "{{ k8s_namespace }}"
         template: "{{ item }}"
 
@@ -45,4 +45,4 @@
             template:
               metadata:
                 labels:
-                  updated: "{{ ansible_date_time.iso8601_basic_short }}"
+                  rolling-update: "{{ ansible_date_time.iso8601_basic_short }}"
