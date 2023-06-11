@@ -1,1 +1,109 @@
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: grafana
+  labels:
+    app: grafana
+    stack: local-network-monitoring
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-data
+  labels:
+    app: grafana
+    stack: local-network-monitoring
+
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasources
+  labels:
+    app: grafana
+    stack: local-network-monitoring
+
+data:
+  prometheus.yaml: |
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus:9090
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  labels:
+    app: grafana
+    stack: local-network-monitoring
+
+data:
+  example.json: ""
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  labels: &labels
+    app: grafana
+    stack: local-network-monitoring
+
+spec:
+  selector:
+    matchLabels: *labels
+
+  template:
+    metadata:
+      labels: *labels
+
+    spec:
+      serviceAccount: grafana
+      volumes:
+        - name: grafana-data
+          persistentVolumeClaim:
+            claimName: grafana-data
+
+        - name: grafana-datasources
+          configMap:
+            name: grafana-datasources
+
+        - name: grafana-dashboards
+          configMap:
+            name: grafana-dashboards
+
+      containers:
+        - name: grafana
+          image: grafana/grafana:9.5.3
+          ports:
+            - name: http
+              containerPort: 3000
+
+          readinessProbe:
+            httpGet:
+              path: /robots.txt
+              port: 3000
+
+          livenessProbe:
+            tcpSocket:
+              port: 3000
+
+          volumeMounts:
+            - name: grafana-data
+              mountPath: /var/lib/grafana
+
+            - name: grafana-datasources
+              mountPath: /etc/grafana/provisioning/datasources
+              readOnly: true
+
+            - name: grafana-dashboards
+              mountPath: /etc/grafana/provisioning/dashboards
+              readOnly: true

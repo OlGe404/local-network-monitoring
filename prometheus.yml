@@ -1,3 +1,4 @@
+#jinja2: lstrip_blocks: True
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -22,6 +23,20 @@ spec:
   resources:
     requests:
       storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  labels: &labels
+    app: prometheus
+    stack: local-network-monitoring
+spec:
+  selector: *labels
+  ports:
+    - name: api
+      port: 9090
+      targetPort: api
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -62,7 +77,7 @@ spec:
         - name: prometheus
           image: prom/prometheus:v2.44.0
           ports:
-            - name: webui
+            - name: api
               containerPort: 9090
 
           volumeMounts:
@@ -71,3 +86,13 @@ spec:
 
             - name: prometheus-conf
               mountPath: /etc/prometheus
+
+          livenessProbe:
+            httpGet:
+              port: 9090
+              path: /-/healthy
+
+          readinessProbe:
+            httpGet:
+              port: 9090
+              path: /-/ready
