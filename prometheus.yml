@@ -6,6 +6,10 @@ metadata:
   labels:
     app: prometheus
     stack: local-network-monitoring
+
+  annotations:
+    origin: https://github.com/OlGe404/local-network-monitor/blob/master/prometheus.yml
+
 data:
   prometheus.yml: |
     global:
@@ -58,6 +62,10 @@ metadata:
   labels:
     app: prometheus
     stack: local-network-monitoring
+
+  annotations:
+    origin: https://github.com/OlGe404/local-network-monitor/blob/master/prometheus.yml
+
 spec:
   volumeMode: Filesystem
   accessModes: ["ReadWriteOnce"]
@@ -72,6 +80,10 @@ metadata:
   labels: &labels
     app: prometheus
     stack: local-network-monitoring
+
+  annotations:
+    origin: https://github.com/OlGe404/local-network-monitor/blob/master/prometheus.yml
+
 spec:
   selector: *labels
   ports:
@@ -86,6 +98,9 @@ metadata:
   labels:
     app: prometheus
     stack: local-network-monitoring
+
+  annotations:
+    origin: https://github.com/OlGe404/local-network-monitor/blob/master/prometheus.yml
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -94,6 +109,10 @@ metadata:
   labels: &labels
     app: prometheus
     stack: local-network-monitoring
+
+  annotations: &annotations
+    origin: https://github.com/OlGe404/local-network-monitor/blob/master/prometheus.yml
+
 spec:
   serviceName: prometheus
   serviceAccount: prometheus
@@ -103,6 +122,7 @@ spec:
   template:
     metadata:
       labels: *labels
+      annotations: *annotations
 
     spec:
       volumes:

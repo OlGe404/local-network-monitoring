@@ -6,6 +6,9 @@ metadata:
   labels:
     app: blackbox-exporter
     stack: local-network-monitoring
+
+  annotations:
+    origin: https://github.com/OlGe404/local-network-monitor/blob/master/blackbox-exporter.yml
 ---
 apiVersion: v1
 kind: Service
@@ -14,6 +17,10 @@ metadata:
   labels: &labels
     app: blackbox-exporter
     stack: local-network-monitoring
+
+  annotations:
+    origin: https://github.com/OlGe404/local-network-monitor/blob/master/blackbox-exporter.yml
+
 spec:
   selector: *labels
   ports:
@@ -29,6 +36,9 @@ metadata:
     app: blackbox-exporter
     stack: local-network-monitoring
 
+  annotations: &annotations
+    origin: https://github.com/OlGe404/local-network-monitor/blob/master/blackbox-exporter.yml
+
 spec:
   selector:
     matchLabels: *labels
@@ -36,6 +46,7 @@ spec:
   template:
     metadata:
       labels: *labels
+      annotations: *annotations
 
     spec:
       serviceAccount: blackbox-exporter

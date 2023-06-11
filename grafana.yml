@@ -6,6 +6,9 @@ metadata:
   labels:
     app: grafana
     stack: local-network-monitoring
+
+  annotations:
+    origin: https://github.com/OlGe404/local-network-monitor/blob/master/grafana.yml
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -14,6 +17,9 @@ metadata:
   labels:
     app: grafana
     stack: local-network-monitoring
+
+  annotations:
+    origin: https://github.com/OlGe404/local-network-monitor/blob/master/grafana.yml
 
 spec:
   accessModes: ["ReadWriteOnce"]
@@ -28,6 +34,9 @@ metadata:
   labels:
     app: grafana
     stack: local-network-monitoring
+
+  annotations:
+    origin: https://github.com/OlGe404/local-network-monitor/blob/master/grafana.yml
 
 data:
   prometheus.yaml: |
@@ -46,6 +55,9 @@ metadata:
     app: grafana
     stack: local-network-monitoring
 
+  annotations: &annotations
+    origin: https://github.com/OlGe404/local-network-monitor/blob/master/grafana.yml
+
 spec:
   selector:
     matchLabels: *labels
@@ -53,6 +65,7 @@ spec:
   template:
     metadata:
       labels: *labels
+      annotations: *annotations
 
     spec:
       serviceAccount: grafana
@@ -96,15 +109,17 @@ spec:
             # - name: grafana-dashboards
             #   mountPath: /etc/grafana/provisioning/dashboards
             #   readOnly: true
-# ---
-# apiVersion: v1
-# kind: ConfigMap
-# metadata:
-#   name: grafana-dashboards
-#   labels:
-#     app: grafana
-#     stack: local-network-monitoring
+  # ---
+  # apiVersion: v1
+  # kind: ConfigMap
+  # metadata:
+  #   name: grafana-dashboards
+  #   labels:
+  #     app: grafana
+  #     stack: local-network-monitoring
 
+  # annotations:
+  #   origin: https://github.com/OlGe404/local-network-monitor/blob/master/grafana.yml
 # {% raw %}
 # data:
 #   dashboard.yml: |

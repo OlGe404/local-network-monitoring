@@ -4,7 +4,6 @@
   vars:
     ansible_connection: local
     ansible_python_interpreter: /usr/bin/env python3
-    k8s_namespace: local-network-monitoring
 
   tasks:
     - name: Deploy namespace
@@ -13,20 +12,22 @@
           apiVersion: v1
           kind: Namespace
           metadata:
-            name: "{{ k8s_namespace }}"
+            name: local-network-monitoring
             labels:
               stack: local-network-monitoring
 
-    - name: Deploy local-network-monitoring components
+            annotations:
+              origin: https://github.com/OlGe404/local-network-monitor/blob/master/playbook.yaml
+
+    - name: Deploy local-network-monitoring stack
       loop:
         - prometheus.yml
         - grafana.yml
         - blackbox-exporter.yml
         - speedtest-exporter.yml
-
       kubernetes.core.k8s:
        # state: absent
-        namespace: "{{ k8s_namespace }}"
+        namespace: local-network-monitoring
         template: "{{ item }}"
 
     - name: Trigger rolling update for pods to reload configs
@@ -40,7 +41,7 @@
           kind: "{{ item.kind }}"
           metadata:
             name: "{{ item.name }}"
-            namespace: "{{ k8s_namespace }}"
+            namespace: local-network-monitoring
           spec:
             template:
               metadata:
