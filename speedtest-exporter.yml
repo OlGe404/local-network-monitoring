@@ -1,0 +1,48 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: speedtest-exporter
+  labels:
+    app: speedtest-exporter
+    stack: local-network-monitoring
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: speedtest-exporter
+  labels: &labels
+    app: speedtest-exporter
+    stack: local-network-monitoring
+spec:
+  selector: *labels
+  ports:
+    - name: http
+      port: 9469
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: speedtest-exporter
+  labels: &labels
+    app: speedtest-exporter
+    stack: local-network-monitoring
+
+spec:
+  selector:
+    matchLabels: *labels
+
+  template:
+    metadata:
+      labels: *labels
+
+    spec:
+      serviceAccount: speedtest-exporter
+      containers:
+        - name: speedtest-exporter
+          image: billimek/prometheus-speedtest-exporter:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 9469

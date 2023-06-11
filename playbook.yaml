@@ -1,7 +1,11 @@
 ---
 - name: Deploy local network monitoring
   hosts: localhost
-  vars_files: vars.yaml
+  vars:
+    ansible_connection: local
+    ansible_python_interpreter: /usr/bin/env python3
+    k8s_namespace: local-network-monitoring
+
   tasks:
     - name: Deploy namespace
       kubernetes.core.k8s:
@@ -17,12 +21,15 @@
       loop:
         - prometheus.yml
         - grafana.yml
+        - blackbox-exporter.yml
+        - speedtest-exporter.yml
 
       kubernetes.core.k8s:
+        # state: absent
         namespace: "{{ k8s_namespace }}"
         template: "{{ item }}"
 
-    - name: Trigger rolling update for pods
+    - name: Trigger rolling update for pods to reload configs
       with_items:
         - { kind: StatefulSet, name: prometheus }
         - { kind: Deployment, name: grafana }

@@ -38,17 +38,6 @@ data:
         access: proxy
         url: http://prometheus:9090
 ---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: grafana-dashboards
-  labels:
-    app: grafana
-    stack: local-network-monitoring
-
-data:
-  example.json: ""
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -76,9 +65,9 @@ spec:
           configMap:
             name: grafana-datasources
 
-        - name: grafana-dashboards
-          configMap:
-            name: grafana-dashboards
+        # - name: grafana-dashboards
+        #   configMap:
+        #     name: grafana-dashboards
 
       containers:
         - name: grafana
@@ -104,6 +93,19 @@ spec:
               mountPath: /etc/grafana/provisioning/datasources
               readOnly: true
 
-            - name: grafana-dashboards
-              mountPath: /etc/grafana/provisioning/dashboards
-              readOnly: true
+            # - name: grafana-dashboards
+            #   mountPath: /etc/grafana/provisioning/dashboards
+            #   readOnly: true
+# ---
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: grafana-dashboards
+#   labels:
+#     app: grafana
+#     stack: local-network-monitoring
+
+# {% raw %}
+# data:
+#   dashboard.yml: |
+# {% endraw %}

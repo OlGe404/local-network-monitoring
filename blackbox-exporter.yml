@@ -1,0 +1,47 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: blackbox-exporter
+  labels:
+    app: blackbox-exporter
+    stack: local-network-monitoring
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: blackbox-exporter
+  labels: &labels
+    app: blackbox-exporter
+    stack: local-network-monitoring
+spec:
+  selector: *labels
+  ports:
+    - name: http
+      port: 9115
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blackbox-exporter
+  labels: &labels
+    app: blackbox-exporter
+    stack: local-network-monitoring
+
+spec:
+  selector:
+    matchLabels: *labels
+
+  template:
+    metadata:
+      labels: *labels
+
+    spec:
+      serviceAccount: blackbox-exporter
+      containers:
+        - name: blackbox-exporter
+          image: prom/blackbox-exporter:v0.24.0
+          ports:
+            - name: http
+              containerPort: 9115
